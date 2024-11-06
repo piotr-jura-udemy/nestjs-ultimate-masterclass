@@ -36,3 +36,6 @@ Content-Type: {{contentType}}
 {
   "status": "DONE"
 }
+
+### Deleting a task
+DELETE {{ baseUrl }}/tasks/7542dcac-43f0-479e-bd5f-936e7592a442
