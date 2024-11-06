@@ -7,7 +7,6 @@ export class CreateTaskDto {
   title: string;
 
   @IsNotEmpty()
-  @IsUUID()
   @IsString()
   description: string;
 
