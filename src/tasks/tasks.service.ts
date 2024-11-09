@@ -3,6 +3,7 @@ import { CreateTaskDto } from './create-task.dto';
 import { ITask, TaskStatus } from './task.model';
 import { Injectable } from '@nestjs/common';
 import { UpdateTaskDto } from './update-task.dto';
+import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 
 @Injectable()
 export class TasksService {
@@ -26,8 +27,27 @@ export class TasksService {
   }
 
   public updateTask(task: ITask, updateTaskDto: UpdateTaskDto): ITask {
+    if (
+      updateTaskDto.status &&
+      !this.isValidStatusTransition(task.status, updateTaskDto.status)
+    ) {
+      throw new WrongTaskStatusException();
+    }
+
     Object.assign(task, updateTaskDto);
     return task;
+  }
+
+  private isValidStatusTransition(
+    currentStatus: TaskStatus,
+    newStatus: TaskStatus,
+  ): boolean {
+    const statusOrder = [
+      TaskStatus.OPEN,
+      TaskStatus.IN_PROGRESS,
+      TaskStatus.DONE,
+    ];
+    return statusOrder.indexOf(currentStatus) <= statusOrder.indexOf(newStatus);
   }
 
   public deleteTask(task: ITask): void {

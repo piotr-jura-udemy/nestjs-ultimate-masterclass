@@ -19,7 +19,7 @@ Content-Type: {{contentType}}
 {
   "title": "Learn NestJS",
   "description": "Complete the NestJS course",
-  "status": "OPEN"
+  "status": "DONE"
 }
 ### Set the task id
 @taskId = {{ createTask.response.body.id }}
