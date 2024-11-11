@@ -1,5 +1,5 @@
 export interface ITask {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   status: TaskStatus;
