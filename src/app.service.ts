@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DummyService } from './dummy/dummy.service';
 import { LoggerService } from './logger/logger.service';
-import { ConfigService } from '@nestjs/config';
-import { ConfigType } from './config/config.types';
 import { AppConfig } from './config/app.config';
+import { TypedConfigService } from './config/typed-config.service';
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly dummyService: DummyService,
     private readonly loggerSerivce: LoggerService,
-    private readonly configService: ConfigService<ConfigType>,
+    private readonly configService: TypedConfigService,
   ) {}
 
   getHello(): string {
