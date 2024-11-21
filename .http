@@ -2,13 +2,16 @@
 @baseUrl = http://localhost:3000
 @contentType = application/json
 
+
 ### The basic request
 GET {{baseUrl}}
 
 ### Get all tasks 
+# @name getTasks
 GET {{baseUrl}}/tasks
 
 ### Get one task
+# @name getTask
 GET {{baseUrl}}/tasks/{{taskId}}
 
 ### Create new task
@@ -25,6 +28,7 @@ Content-Type: {{contentType}}
 @taskId = {{ createTask.response.body.id }}
 
 ### Validation error - status is incorrect
+# @name validationError
 POST {{baseUrl}}/tasks
 Content-Type: {{contentType}}
 
@@ -34,6 +38,7 @@ Content-Type: {{contentType}}
 }
 
 ### Update the task status
+# @name updateTaskStatus
 PATCH {{baseUrl}}/tasks/{{taskId}}
 Content-Type: {{contentType}}
 
@@ -42,4 +47,89 @@ Content-Type: {{contentType}}
 }
 
 ### Deleting a task
+# @name deleteTask
 DELETE {{ baseUrl }}/tasks/{{taskId}}
+
+### Auth - Register new user
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+    "email": "test@example.com",
+    "username": "testuser",
+    "password": "password123"
+}
+
+### Store the token
+@authToken = {{register.response.body.access_token}}
+
+### Auth - Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### Users - Get all users and set userId to the first user
+# @name getUsers
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+### Store the user ID
+@userId = {{getUsers.response.body.0.id}}
+
+### Users - Get one user (replace ID)
+# @name getUser
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+
+### Users - Update user
+# @name updateUser
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+    "email": "updated@example.com",
+    "username": "updateduser"
+}
+
+### Users - Update password
+# @name updatePassword
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+    "password": "newpassword123"
+}
+
+### Users - Delete user
+# @name deleteUser
+DELETE {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+
+### Auth - Login with updated credentials
+# @name loginWithUpdatedCredentials
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "updated@example.com",
+    "password": "newpassword123"
+}
+
+### Auth - Register duplicate user (should fail with 409)
+# @name registerDuplicateUser
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+    "email": "test@example.com",
+    "username": "testuser",
+    "password": "password123"
+}

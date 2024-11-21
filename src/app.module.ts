@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DummyService } from './dummy/dummy.service';
-import { MessageFormatterService } from './message-formatter/message-formatter.service';
-import { LoggerService } from './logger/logger.service';
-import { TasksModule } from './tasks/tasks.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { appConfig } from './config/app.config';
-import { appConfigSchema, ConfigType } from './config/config.types';
-import { typeOrmConfig } from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypedConfigService } from './config/typed-config.service';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigService } from '@nestjs/config';
+import { TasksModule } from './tasks/tasks.module';
+import { ConfigModule } from '@nestjs/config';
+import { appConfig } from './config/app.config';
+import { appConfigSchema } from './config/config.types';
 import { Task } from './tasks/task.entity';
+import { typeOrmConfig } from './config/database.config';
+import { TypedConfigService } from './config/typed-config.service';
+import { authConfig } from './config/auth.config';
+import { User } from './user/user.entity';
+import { IsUniqueConstraint } from './common/validators/is-unique.validator';
 
 @Module({
   imports: [
@@ -20,29 +21,20 @@ import { Task } from './tasks/task.entity';
       inject: [ConfigService],
       useFactory: (configService: TypedConfigService) => ({
         ...configService.get('database'),
-        entities: [Task],
+        entities: [Task, User],
       }),
     }),
     ConfigModule.forRoot({
-      load: [appConfig, typeOrmConfig],
+      load: [appConfig, typeOrmConfig, authConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
-        // allowUnknown: false,
         abortEarly: true,
       },
     }),
     TasksModule,
+    UserModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [
-    AppService,
-    DummyService,
-    MessageFormatterService,
-    LoggerService,
-    {
-      provide: TypedConfigService,
-      useExisting: ConfigService,
-    },
-  ],
+  providers: [IsUniqueConstraint],
 })
 export class AppModule {}
