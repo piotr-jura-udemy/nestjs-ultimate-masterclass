@@ -2,11 +2,8 @@
 @baseUrl = http://localhost:3000
 @contentType = application/json
 
-### The basic request
-GET {{baseUrl}}
-
-### Get all tasks 
-GET {{baseUrl}}/tasks
+### Get all tasks (with filters and pagination)
+GET {{baseUrl}}/tasks?status=OPEN&search=NestJS&createdAfter=2024-01-01&createdBefore=2024-12-31&sortBy=createdAt&sortOrder=DESC&offset=0&limit=10
 
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
@@ -19,27 +16,59 @@ Content-Type: {{contentType}}
 {
   "title": "Learn NestJS",
   "description": "Complete the NestJS course",
-  "status": "OPEN"
-}
-### Set the task id
-@taskId = {{ createTask.response.body.id }}
-
-### Validation error - status is incorrect
-POST {{baseUrl}}/tasks
-Content-Type: {{contentType}}
-
-{
-  "description": "Complete the NestJS course",
-  "status": "XXX"
+  "status": "OPEN",
+  "userId": "0eddc1a8-620f-4590-b6b3-a94c159a8324"
 }
 
-### Update the task status
+### Set the task id from create response
+@taskId = {{createTask.response.body.id}}
+
+### Update task status
 PATCH {{baseUrl}}/tasks/{{taskId}}
 Content-Type: {{contentType}}
 
 {
-  "status": "IN_PROGRESS"
+  "status": "IN_PROGRESS",
+  "title": "Learn NestJS Advanced",
+  "description": "Updated description"
 }
 
-### Deleting a task
-DELETE {{ baseUrl }}/tasks/{{taskId}}
+### Add labels to task
+POST {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+[
+  {
+    "name": "urgent"
+  },
+  {
+    "name": "backend"
+  }
+]
+
+### Delete task with labels
+DELETE {{baseUrl}}/tasks/{{taskId}}
+
+### Example validation error - wrong status
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+  "title": "Test task",
+  "description": "Test description",
+  "status": "INVALID_STATUS"
+}
+
+### Example validation error - status transition
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Content-Type: {{contentType}}
+
+{
+  "status": "OPEN"
+}
+
+### Get tasks with specific labels
+GET {{baseUrl}}/tasks?labels=urgent,backend
+
+### Get tasks with label AND other filters
+GET {{baseUrl}}/tasks?labels=urgent&status=OPEN&search=NestJS

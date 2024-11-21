@@ -8,9 +8,9 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
-import { User } from '../user/user.entity';
-import { TaskStatus } from './task.model';
-import { TaskLabel } from './entities/task-label.entity';
+import { User } from '../../user/user.entity';
+import { TaskStatus } from '../task.model';
+import { TaskLabel } from './task-label.entity';
 
 @Entity()
 @Index(['status', 'userId'])
