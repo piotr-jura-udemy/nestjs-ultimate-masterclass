@@ -19,7 +19,8 @@ Content-Type: {{contentType}}
 {
   "title": "Learn NestJS",
   "description": "Complete the NestJS course",
-  "status": "OPEN"
+  "status": "OPEN",
+  "userId": "49dfc5bf-ada7-4316-a356-d5f992fea5fc"
 }
 ### Set the task id
 @taskId = {{ createTask.response.body.id }}
