@@ -44,8 +44,24 @@ PATCH {{baseUrl}}/tasks/{{taskId}}
 Content-Type: {{contentType}}
 
 {
-  "status": "IN_PROGRESS"
+  "status": "IN_PROGRESS",
+  "labels": []
 }
 
 ### Deleting a task
 DELETE {{ baseUrl }}/tasks/{{taskId}}
+
+### Add labels to task
+POST {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+[
+  { "name": "urgent" },
+  { "name": "bug" }
+]
+
+### Remove specific labels
+DELETE {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+["urgent", "bug"]

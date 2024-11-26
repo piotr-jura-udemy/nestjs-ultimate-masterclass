@@ -17,6 +17,7 @@ import { FindOneParams } from './find-one.params';
 import { UpdateTaskDto } from './update-task.dto';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 import { Task } from './task.entity';
+import { CreateTaskLabelDto } from './create-task-label.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -58,6 +59,26 @@ export class TasksController {
   public async deleteTask(@Param() params: FindOneParams): Promise<void> {
     const task = await this.findOneOrFail(params.id);
     await this.tasksService.deleteTask(task);
+  }
+
+  @Post(':id/labels')
+  async addLabels(
+    @Param('id') id: string,
+    @Body() labels: CreateTaskLabelDto[],
+  ) {
+    const task = await this.tasksService.findOne(id);
+    if (!task) throw new NotFoundException();
+    return this.tasksService.addLabels(task, labels);
+  }
+
+  @Delete(':id/labels')
+  async removeLabels(
+    @Param('id') id: string,
+    @Body() labels: string[], // Array of label names to remove
+  ) {
+    const task = await this.tasksService.findOne(id);
+    if (!task) throw new NotFoundException();
+    return this.tasksService.removeLabels(task, labels);
   }
 
   private async findOneOrFail(id: string): Promise<Task> {
