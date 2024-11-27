@@ -52,3 +52,13 @@ Content-Type: {{contentType}}
 
 ### Deleting a task
 DELETE {{ baseUrl }}/tasks/{{taskId}}
+
+### Add specific labels to task
+# @name addLabels
+POST {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+[
+  {"name": "prioritized"},
+  {"name": "bug"}
+]
