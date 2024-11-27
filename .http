@@ -44,7 +44,10 @@ PATCH {{baseUrl}}/tasks/{{taskId}}
 Content-Type: {{contentType}}
 
 {
-  "status": "IN_PROGRESS"
+  "status": "IN_PROGRESS",
+  "labels": [{
+    "name": "done"
+  }]
 }
 
 ### Deleting a task
