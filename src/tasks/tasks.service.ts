@@ -76,6 +76,20 @@ export class TasksService {
     return task;
   }
 
+  public async removeLabels(
+    task: Task,
+    labelsToRemove: string[],
+  ): Promise<Task> {
+    // 1.Remove existing labels from labels array
+    // 2. Ways to solve
+    //    a) Remove labels from task->labels and save() the Task
+    //    b) Query Builder - SQL that deletes labels
+    task.labels = task.labels.filter(
+      (label) => !labelsToRemove.includes(label.name),
+    );
+    return await this.tasksRepository.save(task);
+  }
+
   public async deleteTask(task: Task): Promise<void> {
     await this.tasksRepository.remove(task);
   }

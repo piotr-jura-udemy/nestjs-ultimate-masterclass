@@ -70,6 +70,16 @@ export class TasksController {
     return await this.tasksService.addLabels(task, labels);
   }
 
+  @Delete(':id/labels')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeLabels(
+    @Param() { id }: FindOneParams,
+    @Body() labelNames: string[],
+  ): Promise<void> {
+    const task = await this.findOneOrFail(id);
+    await this.tasksService.removeLabels(task, labelNames);
+  }
+
   // 1) Create an endpoint POST :id/labels
   // 2) addLabels - mixing existing labels with new ones
   // 3) 500 - we need a method to get unique labels to store

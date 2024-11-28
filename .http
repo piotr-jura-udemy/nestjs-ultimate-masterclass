@@ -62,3 +62,10 @@ Content-Type: {{contentType}}
   {"name": "prioritized"},
   {"name": "bug"}
 ]
+
+### Remove specific labels from task
+# @name removeLabels
+DELETE {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+
+["prioritized", "bug"]
