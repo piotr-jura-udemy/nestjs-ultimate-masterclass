@@ -7,7 +7,7 @@ GET {{baseUrl}}
 
 ### Get all tasks 
 # @name getAllTasks
-GET {{baseUrl}}/tasks
+GET {{baseUrl}}/tasks?limit=2&offset=2
 
 ### Get all in progress tasks
 # @name getAllInProgress

@@ -1,3 +1,5 @@
+import { PaginationResponse } from './../common/pagination.response';
+import { PaginationParams } from './../common/pagination.params';
 import {
   BadRequestException,
   Body,
@@ -26,8 +28,21 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  public async findAll(@Query() filters: FindTaskParams): Promise<Task[]> {
-    return await this.tasksService.findAll(filters);
+  public async findAll(
+    @Query() filters: FindTaskParams,
+    @Query() pagination: PaginationParams,
+  ): Promise<PaginationResponse<Task>> {
+    const [items, total] = await this.tasksService.findAll(filters, pagination);
+
+    return {
+      data: items,
+      meta: {
+        total,
+        ...pagination,
+        // offset: pagination.offset,
+        // limit: pagination.limit,
+      },
+    };
   }
 
   @Get('/:id')

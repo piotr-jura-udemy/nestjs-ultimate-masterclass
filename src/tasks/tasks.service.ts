@@ -1,3 +1,4 @@
+import { PaginationParams } from './../common/pagination.params';
 import { CreateTaskDto } from './create-task.dto';
 import { TaskStatus } from './task.model';
 import { Injectable } from '@nestjs/common';
@@ -19,12 +20,17 @@ export class TasksService {
     private readonly labelsRepository: Repository<TaskLabel>,
   ) {}
 
-  public async findAll(filters: FindTaskParams): Promise<Task[]> {
-    return await this.tasksRepository.find({
+  public async findAll(
+    filters: FindTaskParams,
+    pagination: PaginationParams,
+  ): Promise<[Task[], number]> {
+    return await this.tasksRepository.findAndCount({
       where: {
         status: filters.status,
       },
       relations: ['labels'],
+      skip: pagination.offset,
+      take: pagination.limit,
     });
   }
 
