@@ -6,7 +6,12 @@
 GET {{baseUrl}}
 
 ### Get all tasks 
+# @name getAllTasks
 GET {{baseUrl}}/tasks
+
+### Get all in progress tasks
+# @name getAllInProgress
+GET {{baseUrl}}/tasks?status=IN_PROGRESS
 
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
