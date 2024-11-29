@@ -13,6 +13,10 @@ GET {{baseUrl}}/tasks?limit=2&offset=2
 # @name getAllInProgress
 GET {{baseUrl}}/tasks?status=IN_PROGRESS
 
+### Get all with serach query
+# @name getAllWithSearch
+GET {{baseUrl}}/tasks?search=xxx
+
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
 
