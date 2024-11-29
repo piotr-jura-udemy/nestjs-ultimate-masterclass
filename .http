@@ -15,7 +15,7 @@ GET {{baseUrl}}/tasks?status=IN_PROGRESS
 
 ### Get all with serach query
 # @name getAllWithSearch
-GET {{baseUrl}}/tasks?search=xxx
+GET {{baseUrl}}/tasks?search=tho
 
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
