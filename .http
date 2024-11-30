@@ -19,7 +19,7 @@ GET {{baseUrl}}/tasks?search=tho
 
 ### Get all filtered by labels
 # @name getAllFilteredByLabels
-GET {{baseUrl}}/tasks?labels=urgent
+GET {{baseUrl}}/tasks?labels=urgent,bug
 
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
