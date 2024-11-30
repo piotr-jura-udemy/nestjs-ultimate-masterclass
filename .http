@@ -21,6 +21,10 @@ GET {{baseUrl}}/tasks?search=tho
 # @name getAllFilteredByLabels
 GET {{baseUrl}}/tasks?labels=urgent,bug
 
+### Get all sorted
+# @name getAllSorted
+GET {{baseUrl}}/tasks?sortBy=status&sortOrder=ASC
+
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
 
