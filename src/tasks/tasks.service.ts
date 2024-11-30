@@ -39,6 +39,10 @@ export class TasksService {
       );
     }
 
+    if (filters.labels?.length) {
+      query.andWhere('labels.name IN (:...names)', { names: filters.labels });
+    }
+
     query.skip(pagination.offset).take(pagination.limit);
     return query.getManyAndCount();
   }
