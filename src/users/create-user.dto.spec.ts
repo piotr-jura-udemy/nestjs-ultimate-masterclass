@@ -1,6 +1,5 @@
 import { validate } from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
-import exp from 'constants';
 
 describe('CreateUserDto', () => {
   let dto = new CreateUserDto();
@@ -9,7 +8,7 @@ describe('CreateUserDto', () => {
     dto = new CreateUserDto();
     dto.email = 'test@test.com';
     dto.name = 'Piotr';
-    dto.password = '123456';
+    dto.password = '123456A#';
   });
 
   it('should validate complete valid data', async () => {
@@ -26,8 +25,23 @@ describe('CreateUserDto', () => {
     // Act
     const errors = await validate(dto);
     // Assert
+    // console.log(errors);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('email');
     expect(errors[0].constraints).toHaveProperty('isEmail');
+  });
+
+  // 1) At least 1 uppercase letter
+  // 2) At least 1 number
+  // 3) At least 1 special character
+  it('should return specific validation messages', async () => {
+    dto.password = 'abcdfa';
+    const errors = await validate(dto);
+    const passwordError = errors.find((error) => error.property === 'password');
+    expect(passwordError).not.toBeUndefined();
+    const messages = Object.values(passwordError?.constraints ?? {});
+    expect(messages).toContain(
+      'Password must contain at least 1 uppercase letter',
+    );
   });
 });
