@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PasswordServiceService } from './password-service/password-service.service';
+import { PasswordService } from './password/password.service';
 
 @Module({
   imports: [
@@ -20,5 +22,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
     }),
   ],
+  providers: [PasswordServiceService, PasswordService],
 })
 export class UsersModule {}
