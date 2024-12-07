@@ -38,4 +38,34 @@ describe('PasswordService', () => {
     expect(bcrypt.hash).toHaveBeenCalledWith(password, 10);
     expect(result).toBe(mockHash);
   });
+
+  it('should correctly verify password', async () => {
+    // 1) Mock bcrypt.compare()
+    // 2) mock the resolved value
+    // 3) Call the service method - verify()
+    // 4) bcrypt.compare - was called with specific arguments
+    // 5) We verify if the service method returned what bcrypt.compare() did
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+    const result = await service.verify('password123', 'hashed_password');
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      'password123',
+      'hashed_password',
+    );
+    expect(result).toBe(true);
+  });
+
+  it('should fail on incorrect password', async () => {
+    // 1) Mock bcrypt.compare() - fails!
+    // 2) mock the resolved value
+    // 3) Call the service method - verify()
+    // 4) bcrypt.compare - was called with specific arguments
+    // 5) We verify if the service method returned what bcrypt.compare() did
+    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+    const result = await service.verify('wrong_password', 'hashed_password');
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      'wrong_password',
+      'hashed_password',
+    );
+    expect(result).toBe(false);
+  });
 });
