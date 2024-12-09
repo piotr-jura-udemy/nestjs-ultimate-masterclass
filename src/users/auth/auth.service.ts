@@ -17,7 +17,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
   ) {}
 
-  public async register(createUserDto: CreateUserDto) {
+  public async register(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userService.findOneByEmail(
       createUserDto.email,
     );
