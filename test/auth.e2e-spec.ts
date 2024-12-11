@@ -45,4 +45,17 @@ describe('AppController (e2e)', () => {
       .send(testUser)
       .expect(409);
   });
+
+  it('/auth/login (POST)', async () => {
+    await request(testSetup.app.getHttpServer())
+      .post('/auth/register')
+      .send(testUser);
+
+    const response = await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: testUser.email, password: testUser.password });
+
+    expect(response.status).toBe(201);
+    expect(response.body.accessToken).toBeDefined();
+  });
 });
