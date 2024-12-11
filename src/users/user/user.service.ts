@@ -24,11 +24,12 @@ export class UserService {
     const hashedPassword = await this.passwordService.hash(
       createUserDto.password,
     );
-
-    return await this.userRepository.save({
+    const user = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
     });
+
+    return await this.userRepository.save(user);
   }
 
   public async findOne(id: string): Promise<User | null> {
