@@ -1,5 +1,5 @@
+import { MessageFormatterService } from './../message-formatter/message-formatter.service';
 import { Injectable } from '@nestjs/common';
-import { MessageFormatterService } from 'src/message-formatter/message-formatter.service';
 
 @Injectable()
 export class LoggerService {
