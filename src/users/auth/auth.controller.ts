@@ -45,7 +45,6 @@ export class AuthController {
   }
 
   @Get('/profile')
-  @UseGuards(AuthGuard)
   async profile(@Request() request: AuthRequest): Promise<User> {
     const user = await this.userService.findOne(request.user.sub);
 
