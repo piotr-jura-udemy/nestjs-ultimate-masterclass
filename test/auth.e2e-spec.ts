@@ -1,6 +1,11 @@
+import { PasswordService } from './../src/users/password/password.service';
+import { Role } from './../src/users/role.enum';
+import { User } from './../src/users/user.entity';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { TestSetup } from './utils/test-setup';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AppController (e2e)', () => {
   let testSetup: TestSetup;
@@ -37,6 +42,29 @@ describe('AppController (e2e)', () => {
       .post('/auth/login')
       .send(testUser)
       .expect(201);
+  });
+
+  it('should include roles in JWT token', async () => {
+    const userRepo = testSetup.app.get(getRepositoryToken(User));
+
+    await userRepo.save({
+      ...testUser,
+      roles: [Role.ADMIN],
+      password: await testSetup.app
+        .get(PasswordService)
+        .hash(testUser.password),
+    });
+
+    const response = await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: testUser.email, password: testUser.password });
+
+    const decoded = testSetup.app
+      .get(JwtService)
+      .verify(response.body.accessToken);
+
+    expect(decoded.roles).toBeDefined();
+    expect(decoded.roles).toContain(Role.ADMIN);
   });
 
   it('/auth/register (POST)', () => {

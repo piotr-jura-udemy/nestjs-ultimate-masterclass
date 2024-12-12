@@ -7,7 +7,6 @@ import {
   Post,
   Request,
   SerializeOptions,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from '../create-user.dto';
@@ -17,7 +16,6 @@ import { LoginDto } from '../login.dto';
 import { LoginResponse } from '../login.response';
 import { AuthRequest } from '../auth.request';
 import { UserService } from '../user/user.service';
-import { AuthGuard } from '../auth.guard';
 import { Public } from '../decorators/public.decorator';
 
 @Controller('auth')
