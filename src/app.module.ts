@@ -16,6 +16,8 @@ import { User } from './users/user.entity';
 import { TaskLabel } from './tasks/task-label.entity';
 import { authConfig } from './config/auth.config';
 import { UsersModule } from './users/users.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './users/guards/roles.guard';
 
 @Module({
   imports: [
@@ -49,6 +51,10 @@ import { UsersModule } from './users/users.module';
       provide: TypedConfigService,
       useExisting: ConfigService,
     },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
   ],
 })
 export class AppModule {}

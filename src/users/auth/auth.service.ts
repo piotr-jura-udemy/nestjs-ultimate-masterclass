@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../create-user.dto';
 import { User } from '../user.entity';
 import { PasswordService } from '../password/password.service';
+import { Role } from '../enums/role.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -52,8 +54,22 @@ export class AuthService {
   }
 
   private generateToken(user: User): string {
-    const payload = { sub: user.id, name: user.name };
+    const payload = { sub: user.id, name: user.name, roles: user.roles };
+    console.log('payload', payload);
     return this.jwtService.sign(payload);
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findOneByEmail(email);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...result } = user;
+      return {
+        ...result,
+        roles: [Role.USER],
+      };
+    }
+    return null;
   }
 }
 

@@ -9,7 +9,7 @@ export class LoggerService {
 
   log(message: string): string {
     const formattedMessage = this.messageFormatterService.format(message);
-    console.log(message);
+    // console.log(message);
     return formattedMessage;
   }
 }
