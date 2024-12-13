@@ -13,6 +13,7 @@ import {
   Patch,
   Post,
   Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './create-task.dto';
@@ -22,6 +23,8 @@ import { WrongTaskStatusException } from './exceptions/wrong-task-status.excepti
 import { Task } from './task.entity';
 import { CreateTaskLabelDto } from './create-task-label.dto';
 import { FindTaskParams } from './find-task.params';
+import { AuthRequest } from '../users/auth.request';
+import { Request } from '@nestjs/common';
 
 @Controller('tasks')
 export class TasksController {
@@ -31,36 +34,53 @@ export class TasksController {
   public async findAll(
     @Query() filters: FindTaskParams,
     @Query() pagination: PaginationParams,
+    @Request() req: AuthRequest,
   ): Promise<PaginationResponse<Task>> {
-    const [items, total] = await this.tasksService.findAll(filters, pagination);
+    const [items, total] = await this.tasksService.findAll(
+      filters,
+      pagination,
+      req.user.sub,
+    );
 
     return {
       data: items,
       meta: {
         total,
         ...pagination,
-        // offset: pagination.offset,
-        // limit: pagination.limit,
       },
     };
   }
 
   @Get('/:id')
-  public async findOne(@Param() params: FindOneParams): Promise<Task> {
-    return await this.findOneOrFail(params.id);
+  public async findOne(
+    @Param() params: FindOneParams,
+    @Request() req: AuthRequest,
+  ): Promise<Task> {
+    const task = await this.findOneOrFail(params.id);
+    this.checkTaskOwnership(task, req.user.sub);
+    return task;
   }
 
   @Post()
-  public async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return await this.tasksService.createTask(createTaskDto);
+  public async create(
+    @Body() createTaskDto: CreateTaskDto,
+    @Request() req: AuthRequest,
+  ): Promise<Task> {
+    return await this.tasksService.createTask({
+      ...createTaskDto,
+      userId: req.user.sub,
+    });
   }
 
   @Patch('/:id')
   public async updateTask(
     @Param() params: FindOneParams,
     @Body() updateTaskDto: UpdateTaskDto,
+    @Request() req: AuthRequest,
   ): Promise<Task> {
     const task = await this.findOneOrFail(params.id);
+    this.checkTaskOwnership(task, req.user.sub);
+
     try {
       return await this.tasksService.updateTask(task, updateTaskDto);
     } catch (error) {
@@ -73,8 +93,12 @@ export class TasksController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteTask(@Param() params: FindOneParams): Promise<void> {
+  public async deleteTask(
+    @Param() params: FindOneParams,
+    @Request() req: AuthRequest,
+  ): Promise<void> {
     const task = await this.findOneOrFail(params.id);
+    this.checkTaskOwnership(task, req.user.sub);
     await this.tasksService.deleteTask(task);
   }
 
@@ -82,8 +106,10 @@ export class TasksController {
   async addLabels(
     @Param() { id }: FindOneParams,
     @Body() labels: CreateTaskLabelDto[],
+    @Request() req: AuthRequest,
   ): Promise<Task> {
     const task = await this.findOneOrFail(id);
+    this.checkTaskOwnership(task, req.user.sub);
     return await this.tasksService.addLabels(task, labels);
   }
 
@@ -92,14 +118,12 @@ export class TasksController {
   async removeLabels(
     @Param() { id }: FindOneParams,
     @Body() labelNames: string[],
+    @Request() req: AuthRequest,
   ): Promise<void> {
     const task = await this.findOneOrFail(id);
+    this.checkTaskOwnership(task, req.user.sub);
     await this.tasksService.removeLabels(task, labelNames);
   }
-
-  // 1) Create an endpoint POST :id/labels
-  // 2) addLabels - mixing existing labels with new ones
-  // 3) 500 - we need a method to get unique labels to store
 
   private async findOneOrFail(id: string): Promise<Task> {
     const task = await this.tasksService.findOne(id);
@@ -109,5 +133,11 @@ export class TasksController {
     }
 
     return task;
+  }
+
+  private checkTaskOwnership(task: Task, userId: string) {
+    if (task.userId !== userId) {
+      throw new ForbiddenException('You can only access your own tasks');
+    }
   }
 }

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { TaskStatus } from './task.model';
 import { TaskLabel } from './task-label.entity';
+import { Expose, Type } from 'class-transformer';
 
 // one-to-many
 // User that has many Tasks
@@ -17,9 +18,11 @@ import { TaskLabel } from './task-label.entity';
 // 2) Task - task - userId
 @Entity()
 export class Task {
+  @Expose()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Expose()
   @Column({
     type: 'varchar',
     length: 100,
@@ -27,12 +30,14 @@ export class Task {
   })
   title: string;
 
+  @Expose()
   @Column({
     type: 'text',
     nullable: false,
   })
   description: string;
 
+  @Expose()
   @Column({
     type: 'enum',
     enum: TaskStatus,
@@ -46,14 +51,18 @@ export class Task {
   @ManyToOne(() => User, (user) => user.tasks, { nullable: false })
   user: User;
 
+  @Expose()
+  @Type(() => TaskLabel)
   @OneToMany(() => TaskLabel, (label) => label.task, {
     cascade: true,
   })
   labels: TaskLabel[];
 
+  @Expose()
   @CreateDateColumn()
   createdAt: Date;
 
+  @Expose()
   @UpdateDateColumn()
   updatedAt: Date;
 }

@@ -7,7 +7,7 @@ import { TestSetup } from './utils/test-setup';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 
-describe('AppController (e2e)', () => {
+describe('Auth (e2e)', () => {
   let testSetup: TestSetup;
 
   beforeEach(async () => {
