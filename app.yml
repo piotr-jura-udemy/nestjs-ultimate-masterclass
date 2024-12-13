@@ -1,0 +1,8 @@
+name: nestjs-app
+services:
+  - name: web
+    github:
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    run_command: npm run start:prod
