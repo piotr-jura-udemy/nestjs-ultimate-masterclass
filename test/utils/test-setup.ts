@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { testConfig } from '../config/test.config';
+import { AuthTestHelper } from './auth-test.helper';
 // #endregion
 
 export class TestSetup {
@@ -13,6 +14,8 @@ export class TestSetup {
   // Database connection that lets us clean data between tests
   dataSource: DataSource;
   // #endregion
+
+  private authHelper: AuthTestHelper;
 
   // #region Setup - Creating and initializing test environment
   // Static factory method - easier to use than constructor
@@ -47,6 +50,8 @@ export class TestSetup {
     this.dataSource = moduleFixture.get(DataSource);
     // Initialize app (starts servers, connects to db etc.)
     await this.app.init();
+
+    this.authHelper = new AuthTestHelper(this);
   }
   // #endregion
 
@@ -75,4 +80,8 @@ export class TestSetup {
     await this.app.close(); // Shut down NestJS app
   }
   // #endregion
+
+  get auth() {
+    return this.authHelper;
+  }
 }
