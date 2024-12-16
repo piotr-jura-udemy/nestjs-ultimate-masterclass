@@ -1,3 +1,4 @@
+import { AuthRequest } from './../users/auth.request';
 import { PaginationResponse } from './../common/pagination.response';
 import { PaginationParams } from './../common/pagination.params';
 import {
@@ -13,6 +14,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './create-task.dto';
@@ -22,6 +24,7 @@ import { WrongTaskStatusException } from './exceptions/wrong-task-status.excepti
 import { Task } from './task.entity';
 import { CreateTaskLabelDto } from './create-task-label.dto';
 import { FindTaskParams } from './find-task.params';
+import { CurrentUserId } from './../users/decorators/current-user-id.decorator';
 
 @Controller('tasks')
 export class TasksController {
@@ -51,8 +54,15 @@ export class TasksController {
   }
 
   @Post()
-  public async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return await this.tasksService.createTask(createTaskDto);
+  public async create(
+    @Body() createTaskDto: CreateTaskDto,
+    // @Request() request: AuthRequest,
+    @CurrentUserId() userId: string,
+  ): Promise<Task> {
+    return await this.tasksService.createTask({
+      ...createTaskDto,
+      userId,
+    });
   }
 
   @Patch('/:id')

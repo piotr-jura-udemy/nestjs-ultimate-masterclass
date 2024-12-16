@@ -53,4 +53,23 @@ describe('Tasks (e2e)', () => {
   afterAll(async () => {
     await testSetup.teardown();
   });
+
+  it('should not allow access to other users tasks', async () => {
+    const otherUser = { ...testUser, email: 'other@example.com' };
+    await request(testSetup.app.getHttpServer())
+      .post('/auth/register')
+      .send(otherUser)
+      .expect(201);
+
+    const loginResponse = await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send(otherUser)
+      .expect(201);
+
+    const otherToken = loginResponse.body.accessToken;
+    await request(testSetup.app.getHttpServer())
+      .get(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${otherToken}`)
+      .expect(403);
+  });
 });
