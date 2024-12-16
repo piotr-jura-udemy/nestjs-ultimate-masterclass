@@ -1,12 +1,7 @@
 import { TaskStatus } from './../src/tasks/task.model';
-import { PasswordService } from './../src/users/password/password.service';
-import { Role } from './../src/users/role.enum';
-import { User } from './../src/users/user.entity';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { TestSetup } from './utils/test-setup';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
 
 describe('Tasks (e2e)', () => {
   let testSetup: TestSetup;
