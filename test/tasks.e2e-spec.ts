@@ -72,4 +72,34 @@ describe('Tasks (e2e)', () => {
       .set('Authorization', `Bearer ${otherToken}`)
       .expect(403);
   });
+
+  it('should list users tasks only', async () => {
+    await request(testSetup.app.getHttpServer())
+      .get(`/tasks`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.meta.total).toBe(1);
+      });
+
+    const otherUser = { ...testUser, email: 'other@example.com' };
+    await request(testSetup.app.getHttpServer())
+      .post('/auth/register')
+      .send(otherUser)
+      .expect(201);
+
+    const loginResponse = await request(testSetup.app.getHttpServer())
+      .post('/auth/login')
+      .send(otherUser)
+      .expect(201);
+
+    const otherToken = loginResponse.body.accessToken;
+    await request(testSetup.app.getHttpServer())
+      .get(`/tasks`)
+      .set('Authorization', `Bearer ${otherToken}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.meta.total).toBe(0);
+      });
+  });
 });
